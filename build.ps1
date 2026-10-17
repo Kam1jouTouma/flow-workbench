@@ -29,6 +29,12 @@ function Check-Exit([string]$step) {
     Set-Content -LiteralPath $logPath -Encoding UTF8
 $pdfLibrary = Join-Path $PSScriptRoot 'lib\pdfbox-app-3.0.8.jar'
 if (-not (Test-Path -LiteralPath $pdfLibrary)) { throw 'Missing lib/pdfbox-app-3.0.8.jar' }
+# Source builds need the same CJK font as releases. / 源码构建也携带中文字体，不依赖系统字体。
+$fontSource = Join-Path $PSScriptRoot 'packaging\assets\fonts\NotoSansSC.ttf'
+if (-not (Test-Path -LiteralPath $fontSource)) { throw 'Missing bundled CJK font: NotoSansSC.ttf' }
+$fontDirectory = Join-Path $PSScriptRoot 'fonts'
+New-Item -ItemType Directory -Path $fontDirectory -Force | Out-Null
+Copy-Item -LiteralPath $fontSource -Destination (Join-Path $fontDirectory 'NotoSansSC.ttf') -Force
 $classes = Reset-BuildDirectory 'classes'
 $sources = @(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'src') -Recurse -File -Filter '*.java' |
     ForEach-Object { $_.FullName })
