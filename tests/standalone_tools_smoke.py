@@ -13,6 +13,21 @@ import subprocess
 import zipfile
 
 
+def run_checked(command, **kwargs):
+    """Keep launcher diagnostics visible. / 失败时保留启动器输出，避免只看到退出码。"""
+    result = subprocess.run(command, capture_output=True, **kwargs)
+    if result.returncode:
+        stdout = result.stdout
+        stderr = result.stderr
+        if isinstance(stdout, bytes):
+            stdout = stdout.decode("utf-8", errors="replace")
+            stderr = stderr.decode("utf-8", errors="replace")
+        raise RuntimeError(
+            f"Tool exit {result.returncode}: {command!r}\nstdout: {stdout}\nstderr: {stderr}"
+        )
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--java", required=True, type=Path)
@@ -40,12 +55,11 @@ def main():
             ), "Host code leaked into standalone JAR"
         tools[name] = jar
         for flag in ("--help", "--describe", "--capabilities", "--version"):
-            result = subprocess.run(
+            result = run_checked(
                 [java, "-jar", str(jar), flag],
                 cwd=destination,
-                capture_output=True,
                 encoding="utf-8",
-                check=True,
+                errors="replace",
                 timeout=30,
             )
             assert result.stdout.strip(), "Metadata response is empty"
@@ -74,7 +88,7 @@ def main():
         config.write_text(
             json.dumps({"protocolVersion": 1, "parameters": parameters}), encoding="utf-8"
         )
-        subprocess.run(
+        run_checked(
             [
                 java,
                 "-jar",
@@ -87,8 +101,6 @@ def main():
                 str(stage),
             ],
             cwd=destination,
-            capture_output=True,
-            check=True,
             timeout=60,
         )
         ports = json.loads((stage / "result.json").read_text(encoding="utf-8"))["outputs"]
