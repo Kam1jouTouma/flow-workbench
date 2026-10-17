@@ -1,0 +1,25 @@
+Flow 工作流 v0.16.1 预览版
+
+安装：运行 Setup EXE 选择安装根目录。每次安装创建新的版本目录，不覆盖旧版本。默认数据放在所选根目录的 data 中；便携版首次启动建立程序目录/data。
+打开数据文件夹.cmd 可以定位流程库、样本、输出和用户脚本。新版执行历史默认也放入 data/run-history。系统设置可更改这些目录；节点自己的参数始终由侧边栏配置。
+升级：保留旧版本和 data。新版不会自动读取旧程序目录内的系统设置和 AI 服务；在新版重新设置路径并输入 Key。不要在 GitHub 上传这些个人配置。
+卸载：Windows已安装应用中选择对应版本，或双击卸载程序.cmd；保留data及用户输出，移除此版本服务配置。
+
+九个预置流程：01单文件复制；02按类型批量复制；03逐文件PDF；04 CSV模板改名；05双输入并行双输出；06子图复用；07 Excel合并；08 Java编译打包；09音频提取（需可选组件）。
+示例默认复制和重名另存，不删除样本。系统的文件输出可另行选择移动及冲突策略。
+
+脚本目录：data/user-scripts。Python、Java、BAT 模板由安装时自动复制。EXE 可以使用任何语言开发。
+协议查询：--help、--describe、--capabilities、--version。
+执行：--input <输入JSON绝对路径> --config <配置JSON绝对路径> --output <已创建的空目录绝对路径>。
+查询 JSON 和正文采用 UTF-8。成功退出码0，执行失败4；诊断写 stderr。仅向空暂存目录写 result.json、source.json 及 payloads；不要自行发布到最终目录或删除源文件。
+输入中 inputs.data.items 的 path 为绝对路径；source 来源清单保留 originalPath、relativePath 和 sha256。输出 result.json 的 items.path 使用相对暂存目录路径。
+具体字段请阅读 docs/tool-protocol-v1/工具规范v1.md 和 script-templates。Java 源码自带重新编译脚本；BAT 模板通过 FLOW_PYTHON 调用 Python。正常启动器设置所需环境变量。
+当前自定义工具可以通过“导入脚本”成为可执行FILE节点，需声明data(FILE)和source(JSON)输入输出。
+
+AI 服务：完整 Chat Completions URL、model 与 Key 在系统设置中集中管理。服务名称为自定义显示名称。Key 不跟随流程导出，Windows 当前账户保护通常不能跨机器使用。
+AI 节点：单项文本输入，prompt、maxTokens、响应超时、temperature、token兼容参数。模型输出保存为 AI结果.txt；输出 token 限制并不代表输入上下文大小。
+流程助手：配置支持 function calling 的服务，输入需求，检查草稿后应用，再保存/执行。缺少路径时可在应用后补齐。当前不支持助手生成子图，外部 MCP 不提供执行或保存能力。
+
+构建：Windows JDK17+ 与 .NET Framework4.x；设置 JAVA_HOME 后运行 build.ps1。所有 Java 文件按 release17 编译。源码与工具实现都在发布源码包中。
+依赖：运行包 Java21/Python3.12；PDFBox、openpyxl、et_xmlfile 与中文字体已附带。Office转PDF依赖本机Office/LibreOffice；音频通过安装音频组件.cmd 联网下载FFmpeg，并核对发布方哈希。
+反馈使用脱敏样本，包含版本、流程和复现步骤即可。

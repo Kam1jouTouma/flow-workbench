@@ -1,0 +1,8 @@
+{
+  "protocolVersion": 1,
+  "parameters": {
+    "find": "Python",
+    "replace": "Java",
+    "caseSensitive": true
+  }
+}

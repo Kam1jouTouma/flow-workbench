@@ -1,0 +1,16 @@
+{
+  "protocolVersion": 1,
+  "runId": "run-001",
+  "nodeId": "node-replace",
+  "outputs": {
+    "text": {
+      "type": "TEXT",
+      "items": [
+        {
+          "path": "payloads/replaced.txt",
+          "mediaType": "text/plain"
+        }
+      ]
+    }
+  }
+}

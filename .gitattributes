@@ -1,0 +1,23 @@
+* text=auto
+*.java text eol=lf
+*.py text eol=lf
+*.cs text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.jar binary
+*.zip binary
+*.exe binary
+*.pdf binary
+*.png binary
+*.ttf binary
+*.ttc binary
+
+# Preserve bundled third-party files byte for byte.
+tools/python-vendor/** -text
+tools/ffmpeg/** -text
+licenses/** -text
+packaging/assets/licenses/** -text

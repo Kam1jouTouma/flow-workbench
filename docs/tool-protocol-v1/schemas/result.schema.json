@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "工作元素 v1 result",
+  "type": "object",
+  "properties": {
+    "protocolVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nodeId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "common.schema.json#/$defs/value"
+      }
+    }
+  },
+  "required": [
+    "protocolVersion",
+    "runId",
+    "nodeId",
+    "outputs"
+  ],
+  "additionalProperties": false
+}

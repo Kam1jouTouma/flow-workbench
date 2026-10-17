@@ -1,0 +1,18 @@
+流程助手与MCP使用说明 v1
+版本：Flow 0.16.1
+入口：顶栏“流程助手”。选择系统设置中已配置的AI服务；模型接口需要支持OpenAI兼容Chat Completions的tools/function calling。
+使用：输入需求，点击发送；例如“读取一个目录中的Word文件，逐个转为PDF，再复制到另一个目录；原文件保留”。可以先不填路径，助手生成待配置草稿。
+助手会调用MCP查询能力、读取草稿、生成节点与配置、连接端口并校验。左侧显示对话和工具调用，右侧显示草稿概要与待处理项。
+完成后：点击“应用草稿到画布”，关闭对话框后在侧边栏补参数、保存并执行。应用作为新流程，不覆盖当前流程文件。对话框中的“还原原画布”恢复打开助手前的画布和保存状态。
+权限：工具只修改助手内存草稿，不读取文件正文、执行任务、删除文件、写任意文件、访问密钥或修改系统设置。检查路径会判断存在性和可读性。保存草稿和实际文件执行仍由用户操作。
+数据：你输入的对话、工具返回的草稿内容和配置会发给所选服务；Key只用于认证，不进入消息或MCP返回。对话默认仅在内存中，不写会话文件。
+可配置：服务、每次响应最大Token、每次响应超时、最大思考轮数、Token参数兼容。停止会中断等待并保留已生成草稿；服务端可能仍处理请求。轮数最多20，单轮最多12工具、单次最多48工具。
+首版可建元素：文本输入、文件输入、AI文本处理、文件输出、PDF、改名、文件集合汇合、Java编译、音频提取、Excel合并。子图/虚拟接口和尚未实现的正文读取、结果预览暂不开放给助手创建。
+MCP：JSON-RPC 2.0，协商版本2025-06-18，initialize、notifications/initialized、ping、tools/list、tools/call。
+工具：catalog_list、ai_services_list、workflow_get、workflow_replace、workflow_validate。替换要求expectedRevision，服务端检查类型、字段、数量、配置与连线；无效操作原子拒绝。
+Agent对话框通过嵌入式MCP服务处理tools/list与tools/call，API function schemas从MCP inputSchema动态生成，不依赖截图或电脑操控。
+外部MCP客户端可启动：java -jar 程序目录/workflow-ui-v0.16.1.jar --mcp-stdio。
+外部stdio会话是独立草稿会话，不控制已经打开的GUI。行分隔JSON输入输出，stdout仅协议数据；此会话目前不提供保存/应用/执行工具。
+验证：本地模拟接口完整4轮工具调用、最终UI回归通过；真实配置服务完成catalog查询、服务查询、读取草稿、创建3节点与2连线、校验并指出空输出目录。没有执行文件操作。
+官方参考：https://modelcontextprotocol.io/specification/2025-06-18/server/tools
+官方参考：https://developers.openai.com/api/docs/guides/function-calling

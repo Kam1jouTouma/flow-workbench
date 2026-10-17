@@ -1,0 +1,11 @@
+{
+  "protocolVersion": 1,
+  "runId": "run-001",
+  "nodeId": "node-replace",
+  "error": {
+    "code": "INPUT_UNREADABLE",
+    "message": "无法读取源文本",
+    "port": "text",
+    "itemIndex": 0
+  }
+}

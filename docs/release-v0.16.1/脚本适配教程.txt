@@ -1,0 +1,55 @@
+脚本适配教程 · Flow v0.16.1
+一、最快完成第一次导入
+1. 启动程序，点击“打开数据文件夹.cmd”，进入 user-scripts/Python。
+2. copy_files.py 与 cli_v1.py 必须保留在同一目录。不要只复制入口文件。
+3. 在画布上点击“导入脚本”，选择 copy_files.py。程序实际运行 --help、--describe、--capabilities，验证通过后加入脚本库并在画布添加“用户复制示例”。
+4. 添加文件输入与文件输出，连接“文件输入 → 用户复制示例 → 文件输出”。文件输入选择保留原文件模式，设置源文件；输出设置目标目录。
+5. 选中脚本节点，在侧边栏把参数改成 {"prefix":"my_"}，点击检查、执行。结果为 my_原文件名，原文件保留。
+6. 以后点击“导入脚本”或元素库“自定义脚本”，从脚本库选用已登记的工具。导入登记原文件位置，不搬动脚本，依赖仍使用原同目录；移动或修改脚本后必须重新导入并使用新节点。
+
+二、脚本放在哪里
+建议放在 data/user-scripts/<你的工具名>/，一个工具和它的依赖放一个文件夹。也可以选择任意已有文件夹的脚本。流程保存脚本绝对路径，换电脑时请重新导入和配置，不包含脚本文件本身。
+安装包自带 Python、Java、BAT 三种可运行模板，位置为 data/user-scripts。Python解释器通过系统设置选择，默认随包解释器。Java编译模板附源码和重新编译.cmd。
+EXE/PY/BAT/CMD/JAR使用相同协议；当前自定义脚本节点只支持 data(FILE) 与 source(JSON) 两个输入和输出端口，不支持额外具名输入或TEXT直连。
+导入和执行会运行脚本，请仅使用自己编写或可信的工具。
+
+三、命令行协议
+--help：面向用户的帮助文字。
+--describe：单个UTF-8 JSON，必须包含 protocolVersion、id、name、version、description、inputs、outputs、parameters。
+--capabilities：单个JSON，声明 capabilityVersion、toolId、toolVersion、implementation、operation、inputs、outputs、knownExtensions；工具身份和版本须与describe一致。
+--version：工具版本。标准输出留给查询结果，运行诊断写stderr。
+执行：--input <输入JSON绝对路径> --config <配置JSON绝对路径> --output <预先创建的空目录绝对路径>。
+成功退出码0；失败用非0（模板为4）。不要在stdout混入广告、调试日志或进度文字。
+
+四、数据格式
+input.json = {"protocolVersion":1,"runId":"本次运行ID","nodeId":"节点ID","inputs":{"data":{"type":"FILE","items":[{"path":"C:/demo/a.txt"}]},"source":{"type":"JSON","items":[{"path":"C:/demo/source.json"}]}}}
+source.json = {"files":[{"originalPath":"C:/demo/a.txt","relativePath":"a.txt","sha256":"源内容SHA256"}]}
+config.json = {"protocolVersion":1,"parameters":{"prefix":"my_"}}
+工具把结果写入 --output 目录内，例如 payloads/my_a.txt，返回对应来源清单 source.json。
+result.json = {"protocolVersion":1,"runId":"与输入一致","nodeId":"与输入一致","outputs":{"data":{"type":"FILE","items":[{"path":"payloads/my_a.txt"}]},"source":{"type":"JSON","items":[{"path":"source.json"}]}}}
+结果路径必须是暂存目录内的相对路径，不允许 ../、绝对路径或指向目录外。结果文件和来源files数量要一致，relativePath是发布时使用的文件名。保留originalPath及原文件哈希用于输出阶段的保留/移动处理；实际结果的sha256应与结果内容一致。可参照copy_files.py的originals字段。
+工具仅处理暂存输出；最终保存目录、重名处理、源文件删除由文件输出元素负责，脚本不要直接删除或覆盖用户文件。
+
+五、修改Python模板
+复制整个Python模板文件夹，编辑 copy_files.py：
+A. 改 DESCRIPTION 的 id/name/version/description。
+B. 在 DESCRIPTION.parameters 加配置项（例如 prefix），明确name/type/default/required。当前侧边栏使用JSON对象配置，键和类型必须匹配声明；支持string、integer、number、boolean及enum。
+C. 更新 CAPABILITY 的文件类型与单项/集合声明，不要声称支持无法处理的格式。
+D. 在 execute(request,parameters,output) 修改处理逻辑。模板的inputs(request)已读取并检查来源信息，dump/sha用于输出清单和哈希。
+E. 保留 cli_v1.py 提供的命令行解析和结果身份检查。先手动 --help / --describe 验证，再在程序导入和执行样本。
+不要从JSON调用eval，也不要把用户参数拼成shell命令。正常使用文件路径和参数数组调用其他程序。
+
+六、BAT、JAR和EXE
+BAT模板展示如何用同目录Python工具处理规范数据，入口路径和依赖都不要单独搬动。
+JAR模板含Java源码；使用 ProcessBuilder 参数列表、UTF-8读写、解析三个标准参数。通过 java -jar xxx.jar --describe 返回JSON即可，入口Main类无需特殊Java语法。
+EXE可以由C#、C++、Go等语言编写，按相同参数和JSON工作；原生工具不需要Java，但被导入工具的查询接口必须可运行。
+当前通用工具执行上限为10分钟；内部已有AI节点用其专门响应超时。导入时的帮助查询上限10秒。
+
+七、排错
+导入失败：查看是否缺少依赖、Python配置、描述字段或端口声明；使用模板作为对照。
+脚本已修改：重新导入新版，旧节点保留旧的哈希，不会悄悄运行更改后的程序。
+参数格式错误：必须是JSON对象，字符串使用双引号；不能传未声明键。
+结果无法发布：检查result身份、相对路径、source.files数量及哈希。
+完整协议规范见同包 docs/tool-protocol-v1/工具规范v1.md。
+
+C# EXE查询输出须设置 Console.OutputEncoding = new System.Text.UTF8Encoding(false)。如果包装其他进程，也需设置 StandardOutputEncoding/StandardErrorEncoding 为 UTF8，避免中文描述破坏JSON。

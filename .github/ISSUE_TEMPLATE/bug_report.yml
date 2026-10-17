@@ -1,0 +1,16 @@
+name: 问题反馈
+description: 提交可复现的问题（请勿附上 Key 或个人文件）
+body:
+  - type: input
+    id: version
+    attributes:
+      label: 程序版本和 Windows 版本
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤、预期结果和实际结果
+      description: 可以附上脱敏流程；不要上传个人设置、Key 或真实文档。
+    validations:
+      required: true

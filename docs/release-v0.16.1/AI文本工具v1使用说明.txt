@@ -1,0 +1,17 @@
+AI 文本工具 v1 使用说明
+独立可执行文件：ai-text-tool-v1.jar（与程序放在同一目录）。
+界面：示例 → AI文本处理，或者添加工作元素“AI文本处理”。
+先在系统设置 → AI服务填写完整URL、Model和Key；AI节点侧边栏选择服务。
+基本配置：Prompt（系统指令），最大Token（默认2048），最大响应时间（默认120秒，范围1–600），Temperature（空为服务默认，0–2），Token参数兼容（max_completion_tokens或max_tokens）。
+接口：OpenAI兼容Chat Completions；非流式，POST用户填写的完整URL，不添加路径。Responses、Anthropic等其他原生协议暂不支持。
+输入：单个TEXT，支持文本输入元素或文件输入的文本读取模式。UTF8暂存输入最大1MiB；提示词是system消息，输入内容是user消息。
+输出：TEXT和来源清单；文件输出保存为AI结果.txt。可继续接AI元素，或由文件输出配置保存目录与完成后打开目标目录。
+安全：节点仅保存serviceId，不保存URL/Model的运行快照或Key。执行器通过Windows用户级DPAPI即时解密，只在请求Authorization头中使用；失败不记录服务错误正文，不跟随重定向，不显式重试。输出中若出现完全相同的Key字符串会被遮蔽。
+超时：从发送请求到收完响应正文的总时间。停止本地等待不能保证服务端停止或不计费。
+达到Token上限：保存已返回文本并提示可能截断。
+命令行：java -jar ai-text-tool-v1.jar --help / --describe / --capabilities / --version。
+执行：java -jar ai-text-tool-v1.jar --input 输入请求JSON绝对路径 --config 配置JSON绝对路径 --output 已创建的空目录绝对路径。
+config.parameters包含 serviceId、prompt、maxTokens、timeoutSeconds、temperature、tokenParameter；不接受Key参数。
+请求与结果遵循系统工具规范v1。data为单项TEXT文件；source为单项JSON来源清单。成功返回0，执行失败返回4。
+验证：本地模拟HTTP接口实际调用、完整CLI及文本输入→AI→文件输出成功；认证、参数、持久化、截断提示、错误脱敏、正文超时和禁止重定向通过。未调用真实供应商，实际兼容性需使用自己的服务测试。
+参考：https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create

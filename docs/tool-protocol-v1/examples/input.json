@@ -1,0 +1,16 @@
+{
+  "protocolVersion": 1,
+  "runId": "run-001",
+  "nodeId": "node-replace",
+  "inputs": {
+    "text": {
+      "type": "TEXT",
+      "items": [
+        {
+          "path": "C:\\FlowDemo\\docs\\tool-protocol-v1\\examples\\payloads\\source.txt",
+          "mediaType": "text/plain"
+        }
+      ]
+    }
+  }
+}

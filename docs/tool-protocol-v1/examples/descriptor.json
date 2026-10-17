@@ -1,0 +1,57 @@
+{
+  "protocolVersion": 1,
+  "id": "text.replace",
+  "name": "文本替换",
+  "version": "1.0.0",
+  "description": "按字面匹配替换文本中的指定内容",
+  "category": "文本处理",
+  "timeoutSeconds": 300,
+  "requirements": [
+    "运行方式二选一：Python 3，或符合工具编译目标的 Java 运行时"
+  ],
+  "inputs": [
+    {
+      "name": "text",
+      "label": "源文本",
+      "types": [
+        "TEXT"
+      ],
+      "cardinality": "SINGLE",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "text",
+      "label": "替换结果",
+      "types": [
+        "TEXT"
+      ],
+      "cardinality": "SINGLE",
+      "required": true
+    }
+  ],
+  "parameters": [
+    {
+      "name": "find",
+      "label": "查找内容",
+      "type": "string",
+      "required": true,
+      "minLength": 1
+    },
+    {
+      "name": "replace",
+      "label": "替换内容",
+      "type": "string",
+      "required": false,
+      "default": ""
+    },
+    {
+      "name": "caseSensitive",
+      "label": "区分大小写",
+      "type": "boolean",
+      "required": false,
+      "default": true
+    }
+  ]
+}

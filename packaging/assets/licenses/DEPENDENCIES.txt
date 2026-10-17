@@ -1,0 +1,6 @@
+Temurin 21 runtime: https://adoptium.net/temurin/releases/ ; legal notices in runtime/java/legal.
+Python 3.12.10 embeddable: https://www.python.org/downloads/release/python-31210/ ; LICENSE.txt in runtime/python.
+PDFBox 3.0.8: https://pdfbox.apache.org/ ; license/notice preserved in lib JAR and extracted here.
+openpyxl 3.1.5 and et_xmlfile 2.0.0: MIT licenses included in tools/python-vendor/*.dist-info.
+Noto Sans SC: https://github.com/google/fonts/tree/main/ofl/notosanssc ; OFL license included here.
+FFmpeg is NOT redistributed in this package. Optional audio setup downloads the original Gyan build directly: https://www.gyan.dev/ffmpeg/builds/ ; downloaded LICENSE/README retained beside binaries.

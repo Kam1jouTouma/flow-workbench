@@ -1,0 +1,13 @@
+GitHub 发布准备：v0.16.1 预览版
+
+1. 将 FlowWorkbench-0.16.1-source.zip 解压后的内容作为仓库根目录上传。不要上传整个开发工作区。
+2. README、构建脚本、依赖声明、问题反馈模板和 Windows GitHub Actions 工作流已准备好。
+3. 创建标签 v0.16.1；Release 标记为 Pre-release，标题为 Flow 工作流 v0.16.1 预览版。
+4. 描述使用 RELEASE_NOTES.md；附加 Setup EXE、windows-x64 ZIP、source ZIP、SHA256SUMS.txt 和发布测试报告.txt。
+5. 提供给普通使用者的是 Setup EXE；便携 ZIP 用于不安装直接运行；源码 ZIP 用于开发。
+
+未配置远程仓库，本次只整理本地待发布文件，没有创建远程仓库、提交或上传 Release。
+项目自有代码尚未选定开源许可证，因此 LICENSE.txt 暂时保留权利。第三方依赖许可完整保留；公开源码并不等同于开放任意再分发授权。
+
+设置、Key、个人流程库、运行历史和实际用户文档不属于发布内容。未来重新打包时也应执行此检查。
+GitHub Actions 配置已提供；本地已验证同类构建与测试，实际云端运行需上传仓库后确认。

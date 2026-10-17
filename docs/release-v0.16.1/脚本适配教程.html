@@ -1,0 +1,77 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>脚本适配教程 · Flow v0.16.1</title><style>
+    :root{color-scheme:light;--ink:#24324a;--muted:#65758c;--accent:#345fc4}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f7fb;color:var(--ink);font:16px/1.85 "Microsoft YaHei",system-ui,sans-serif}
+    .layout{max-width:1200px;margin:40px auto;display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;padding:0 24px}
+    nav{align-self:start;position:sticky;top:28px;padding:20px;border:1px solid #dfe6f1;border-radius:12px;background:#fff}
+    nav strong{display:block;margin-bottom:12px}nav a{display:block;padding:6px 0;font-size:14px;line-height:1.65}
+    main{min-width:0;background:#fff;border:1px solid #dfe6f1;border-radius:14px;padding:36px 44px}
+    h1{font-size:32px;line-height:1.4;margin:0 0 18px}h2{font-size:23px;line-height:1.5;margin:44px 0 18px;padding-top:14px;border-top:1px solid #e6ecf5;scroll-margin-top:24px}
+    h3{font-size:18px;line-height:1.6;margin:28px 0 12px}p{margin:12px 0}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+    ol,ul{padding-left:25px;margin:16px 0}li{margin:8px 0;padding-left:4px}p code,li code{background:#edf2fa;color:#234b94;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+    code{font:14px/1.7 Consolas,"Cascadia Code",monospace}.code-block{border:1px solid #dce4ef;border-radius:9px;overflow:hidden;margin:18px 0;background:#f6f8fc}
+    .code-label{font:12px/1.5 system-ui,sans-serif;letter-spacing:.4px;color:var(--muted);padding:8px 16px;border-bottom:1px solid #e2e8f2;background:#edf2f9}
+    pre{margin:0;padding:16px 20px;overflow-x:auto;white-space:pre;tab-size:4}blockquote{margin:20px 0;padding:8px 18px;border-left:4px solid #5278cc;background:#eef4ff;border-radius:0 8px 8px 0;font-size:14px}
+    .source{font-size:13px;color:var(--muted);margin-bottom:28px}.footer{margin-top:36px;padding-top:18px;border-top:1px solid #e6ecf5;font-size:13px;color:var(--muted)}
+    @media(max-width:850px){.layout{display:block;margin:20px auto;padding:0 12px}nav{position:static;margin-bottom:18px}main{padding:24px 22px}h1{font-size:27px}h2{font-size:21px}}
+    @media print{body{background:#fff}.layout{display:block;margin:0;padding:0}nav{display:none}main{border:0;padding:0}pre{white-space:pre-wrap}h2{break-after:avoid}.code-block{break-inside:avoid}}
+    </style></head><body><div class="layout"><nav aria-label="教程目录"><strong>教程目录</strong><a href="#section-1">1. 第一次导入：先运行模板</a><a href="#section-2">2. 文件放在哪里</a><a href="#section-3">3. 命令行协议</a><a href="#section-4">4. 数据如何传递</a><a href="#section-5">5. 从 Python 模板改出自己的工具</a><a href="#section-6">6. BAT、JAR 和 EXE 怎么适配</a><a href="#section-7">7. 常见问题</a></nav><main><div class="source">Flow v0.16.1 · <a href="脚本适配教程.md">Markdown 源文档</a></div><h1>脚本适配教程</h1><p>适用于 <strong>Flow 工作流 v0.16.1</strong>。从随包模板开始，完成一次“文件输入 → 自定义脚本 → 文件输出”。</p><h2 id="section-1">1. 第一次导入：先运行模板</h2><ol><li>启动程序，双击“打开数据文件夹.cmd”，进入 <code>user-scripts/Python</code>。</li><li>保持 <code>copy_files.py</code> 和 <code>cli_v1.py</code> 在同一目录。</li><li>点击画布工具栏的“导入脚本”，选择 <code>copy_files.py</code>。校验通过后，程序将工具登记到脚本库，并添加“用户复制示例”节点。</li><li>添加文件输入和文件输出，连接三个节点。输入选择“保留原文件”模式，设置源文件；输出设置目标目录。</li><li>选中脚本节点，在侧边栏填写下面的参数，点击“检查”，再点击“执行”。</li></ol><div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;prefix&quot;: &quot;my_&quot;
+}</code></pre></div><p>输入 <code>a.txt</code> 时，输出为 <code>my_a.txt</code>，原文件保留。</p><p>以后点击“导入脚本”或元素库中的“自定义脚本”，即可再次选用已登记的工具。</p><blockquote><p>导入登记脚本原位置，不搬动文件。移动或修改入口脚本后，需要重新导入并使用新节点；已有节点会检查入口文件的哈希。</p></blockquote><h2 id="section-2">2. 文件放在哪里</h2><p>建议每个工具使用一个文件夹，把入口脚本和依赖放在一起：</p><div class="code-block"><div class="code-label">text</div><pre><code>data/
+└── user-scripts/
+    └── 我的工具/
+        ├── copy_files.py
+        └── cli_v1.py</code></pre></div><ul><li>安装包提供 Python、Java、BAT 三种可运行模板，位于 <code>data/user-scripts</code>。</li><li>Python 解释器由系统设置选择，默认使用随包解释器。</li><li>Java 模板包含源码及“重新编译.cmd”。</li><li>也可以导入其他目录的脚本，保持其依赖目录结构即可。</li><li>流程保存入口的绝对路径，不包含脚本文件本身。换电脑时需重新导入和配置。</li></ul><h3>当前支持范围</h3><p>EXE、PY、BAT、CMD、JAR 使用同一协议。当前自定义节点要求输入和输出都包含以下两个端口：</p><ul><li><code>data</code>：<code>FILE</code> 文件数据，按声明接收单个文件或文件集合。</li><li><code>source</code>：单项 <code>JSON</code> 来源清单。</li></ul><p>当前不支持额外具名输入或 <code>TEXT</code> 直连。导入查询和执行都会运行脚本，请使用自己编写或可信的工具。</p><h2 id="section-3">3. 命令行协议</h2><h3>查询接口</h3><ul><li><code>--help</code>：返回面向用户的帮助文字。</li><li><code>--describe</code>：返回单个 UTF-8 JSON，包含 <code>protocolVersion</code>、<code>id</code>、<code>name</code>、<code>version</code>、<code>description</code>、<code>inputs</code>、<code>outputs</code>、<code>parameters</code>。</li><li><code>--capabilities</code>：返回单个 JSON，包含 <code>capabilityVersion</code>、<code>toolId</code>、<code>toolVersion</code>、<code>implementation</code>、<code>operation</code>、<code>inputs</code>、<code>outputs</code>、<code>knownExtensions</code>。</li><li><code>--version</code>：返回版本号，必须与工具描述一致。</li></ul><p>导入时程序实际调用以上四个接口；工具身份和版本必须相互一致。</p><h3>执行接口</h3><div class="code-block"><div class="code-label">text</div><pre><code>--input &lt;输入 JSON 的绝对路径&gt;
+--config &lt;配置 JSON 的绝对路径&gt;
+--output &lt;预先创建的空目录的绝对路径&gt;</code></pre></div><p>例如，使用 JAR 工具：</p><div class="code-block"><div class="code-label">powershell</div><pre><code>java -jar my-tool.jar --input &quot;C:\demo\input.json&quot; --config &quot;C:\demo\config.json&quot; --output &quot;C:\demo\stage&quot;</code></pre></div><ul><li>成功退出码为 <code>0</code>；失败使用非零退出码，模板为 <code>4</code>。</li><li>标准输出留给查询结果，运行诊断写入标准错误。</li><li>不要在查询 JSON 中混入调试日志、广告或进度文字。</li><li>通用工具执行上限为 10 分钟；导入查询上限为 10 秒。内置 AI 节点使用自己的响应超时设置。</li></ul><h2 id="section-4">4. 数据如何传递</h2><p>以下路径和哈希是示例占位值，手动运行时需替换。</p><h3>输入请求：input.json</h3><div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;protocolVersion&quot;: 1,
+  &quot;runId&quot;: &quot;run-demo&quot;,
+  &quot;nodeId&quot;: &quot;node-demo&quot;,
+  &quot;inputs&quot;: {
+    &quot;data&quot;: {
+      &quot;type&quot;: &quot;FILE&quot;,
+      &quot;items&quot;: [{ &quot;path&quot;: &quot;C:/demo/a.txt&quot; }]
+    },
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;JSON&quot;,
+      &quot;items&quot;: [{ &quot;path&quot;: &quot;C:/demo/source.json&quot; }]
+    }
+  }
+}</code></pre></div><h3>输入来源清单：source.json</h3><div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;files&quot;: [
+    {
+      &quot;originalPath&quot;: &quot;C:/demo/a.txt&quot;,
+      &quot;relativePath&quot;: &quot;a.txt&quot;,
+      &quot;sha256&quot;: &quot;源文件内容的 SHA256&quot;
+    }
+  ]
+}</code></pre></div><h3>配置：config.json</h3><div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;protocolVersion&quot;: 1,
+  &quot;parameters&quot;: {
+    &quot;prefix&quot;: &quot;my_&quot;
+  }
+}</code></pre></div><h3>暂存结果目录</h3><p>工具只向 <code>--output</code> 指定的暂存目录写入结果：</p><div class="code-block"><div class="code-label">text</div><pre><code>stage/
+├── payloads/
+│   └── my_a.txt
+├── source.json
+└── result.json</code></pre></div><p>输出 <code>source.json</code> 应更新 <code>relativePath</code> 为结果名称、<code>sha256</code> 为结果内容哈希，同时保留原始来源信息。可参照模板里的 <code>originals</code> 字段，保存原文件路径与原始哈希。</p><h3>结果清单：result.json</h3><div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;protocolVersion&quot;: 1,
+  &quot;runId&quot;: &quot;run-demo&quot;,
+  &quot;nodeId&quot;: &quot;node-demo&quot;,
+  &quot;outputs&quot;: {
+    &quot;data&quot;: {
+      &quot;type&quot;: &quot;FILE&quot;,
+      &quot;items&quot;: [{ &quot;path&quot;: &quot;payloads/my_a.txt&quot; }]
+    },
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;JSON&quot;,
+      &quot;items&quot;: [{ &quot;path&quot;: &quot;source.json&quot; }]
+    }
+  }
+}</code></pre></div><h3>必须遵守的结果约定</h3><ul><li><code>runId</code> 和 <code>nodeId</code> 必须与输入一致。</li><li>输出路径必须相对于暂存目录，不能使用绝对路径、<code>../</code> 或指向目录外的路径。</li><li>结果文件与来源清单的 <code>files</code> 数量应一致。</li><li><code>relativePath</code> 是文件输出阶段使用的文件名；结果哈希应与实际内容一致。</li><li>保留原文件路径与原始哈希，供输出阶段判断保留或移动。</li></ul><blockquote><p>最终保存目录、重名处理和原文件删除由“文件输出”元素负责。脚本只处理暂存结果，不直接删除或覆盖用户文件。</p></blockquote><h2 id="section-5">5. 从 Python 模板改出自己的工具</h2><p>复制整个 Python 模板目录，再编辑 <code>copy_files.py</code>：</p><ol><li>修改 <code>DESCRIPTION</code> 的 <code>id</code>、<code>name</code>、<code>version</code>、<code>description</code>。</li><li>在 <code>DESCRIPTION.parameters</code> 声明配置项，填写 <code>name</code>、<code>type</code>、<code>default</code>、<code>required</code>。侧边栏参数的键和类型必须匹配声明。</li><li>更新 <code>CAPABILITY</code> 的文件格式和单项／集合声明，与实际处理能力一致。</li><li>在 <code>execute(request, parameters, output)</code> 编写业务处理。模板的 <code>inputs(request)</code> 读取并检查来源，<code>dump</code> 写 JSON，<code>sha</code> 计算哈希。</li><li>保留 <code>cli_v1.py</code> 的命令行解析和身份检查，先验证查询接口，再导入程序执行样本。</li></ol><p>例如，声明一个文件名前缀：</p><div class="code-block"><div class="code-label">python</div><pre><code>{
+    &quot;name&quot;: &quot;prefix&quot;,
+    &quot;label&quot;: &quot;文件名前缀&quot;,
+    &quot;type&quot;: &quot;string&quot;,
+    &quot;default&quot;: &quot;copy_&quot;,
+    &quot;required&quot;: False
+}</code></pre></div><p>当前参数支持 <code>string</code>、<code>integer</code>、<code>number</code>、<code>boolean</code>，以及声明中的 <code>enum</code> 选项。</p><p>不要对 JSON 使用 <code>eval</code>，也不要将用户参数拼成 shell 命令；调用其他程序时使用参数数组。</p><h2 id="section-6">6. BAT、JAR 和 EXE 怎么适配</h2><h3>BAT / CMD</h3><p>随包 BAT 模板展示如何调用相邻目录的 Python 工具。入口和依赖目录需一起保留，解释器通过 <code>FLOW_PYTHON</code> 指定。</p><h3>JAR</h3><p>随包模板包含 Java 源码。使用 UTF-8 读写文件，以 <code>ProcessBuilder</code> 参数列表调用外部程序，并解析 <code>--input</code>、<code>--config</code>、<code>--output</code>。</p><div class="code-block"><div class="code-label">powershell</div><pre><code>java -jar my-tool.jar --describe</code></pre></div><p>返回符合规范的 JSON 即可，入口 <code>Main</code> 类不需要特殊语法。</p><h3>EXE</h3><p>可用 C#、C++、Go 等语言编写，遵循相同的参数与 JSON 协议。EXE 本身不需要 Java。</p><p>C# 查询输出应使用 UTF-8：</p><div class="code-block"><div class="code-label">csharp</div><pre><code>Console.OutputEncoding = new System.Text.UTF8Encoding(false);</code></pre></div><p>如果包装其他进程，还应指定读取编码：</p><div class="code-block"><div class="code-label">csharp</div><pre><code>start.StandardOutputEncoding = System.Text.Encoding.UTF8;
+start.StandardErrorEncoding = System.Text.Encoding.UTF8;</code></pre></div><p>否则中文描述可能被错误解码，导致 JSON 校验失败。</p><h2 id="section-7">7. 常见问题</h2><h3>导入失败</h3><p>检查依赖、Python 设置、描述字段、端口声明和四个查询接口。先与随包模板对照。</p><h3>提示“脚本已修改”</h3><p>重新导入新版，并添加新节点。旧节点保留原哈希，防止入口更改后直接执行。</p><h3>参数格式错误</h3><p>必须填写 JSON 对象，字符串使用双引号；参数键和类型应匹配描述，不能添加未声明的键。</p><h3>结果无法发布</h3><p>检查结果的运行／节点身份、相对路径、<code>source.files</code> 数量和哈希。</p><p>更完整的字段规范见 <a href="../tool-protocol-v1/工具规范v1.md">工具规范 v1</a>。</p><p class="footer">本页由 Markdown 源文档生成；修改教程请编辑同目录的 .md 文件。</p></main></div></body></html>
