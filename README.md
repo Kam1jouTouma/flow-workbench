@@ -38,6 +38,7 @@ Windows 桌面可视化批处理工具，使用 Java Swing 编写。将输入、
 - AI 服务必须支持兼容 Chat Completions 的请求格式；流程助手还需要 function calling。max token 限制的是模型输出。
 - 目前只验证 Windows x64；程序运行目录需要当前用户写入权限。
 - 请使用较短的安装、解压和工作目录。过深的目录层级可能触发 Windows 子进程工作目录长度限制，导致工具启动失败（CreateProcess error=267）；当前版本未完整支持超长路径。
+- 英文 Windows 的 Java 启动器可能无法接收中文绝对路径。建议程序及工作目录使用较短的英文路径；单独运行位于中文目录的工具时，先进入工具目录，再用 `java -jar file-input-tool-v1.jar --help` 这样的相对 JAR 名启动。该方式不代表所有非系统代码页命令行参数均已兼容。
 
 ## 从源码构建
 

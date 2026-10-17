@@ -56,8 +56,10 @@ def main():
         tools[name] = jar
         for flag in ("--help", "--describe", "--capabilities", "--version"):
             result = run_checked(
-                [java, "-jar", str(jar), flag],
-                cwd=destination,
+                # Windows java.exe may replace non-ANSI command-line paths with '?'.
+                # 保留中文目录，用工作目录和相对 JAR 名启动，避免启动器损坏路径。
+                [java, "-jar", jar.name, flag],
+                cwd=folder,
                 encoding="utf-8",
                 errors="replace",
                 timeout=30,
@@ -92,7 +94,7 @@ def main():
             [
                 java,
                 "-jar",
-                str(tools[name]),
+                tools[name].name,
                 "--input",
                 str(request),
                 "--config",
@@ -100,7 +102,7 @@ def main():
                 "--output",
                 str(stage),
             ],
-            cwd=destination,
+            cwd=tools[name].parent,
             timeout=60,
         )
         ports = json.loads((stage / "result.json").read_text(encoding="utf-8"))["outputs"]
@@ -113,7 +115,7 @@ def main():
         checks.append(name + " real CLI execution")
         return ports
 
-    source = destination / "synthetic.txt"
+    source = destination / "中文样本.txt"
     source.write_text("Standalone Java tool chain\nTotal: 1750.50\n", encoding="utf-8")
     source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
     ports = run(

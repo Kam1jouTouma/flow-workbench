@@ -19,6 +19,8 @@ OpenFoldersSmoke.java 校验打开目录配置、去重和结果列表，不实�
 2026-10-17 新增：Java 工具独立性与课程模板
 - python tests/standalone_tools_smoke.py --java <java.exe> --output <全新目录>
   仅使用合成输入；将每个 JAR 放入独立目录，验证20次协议查询、4步真实CLI和主/工具类边界。
+  中文工具目录使用 cwd + 相对 JAR 名启动；中文源文件路径通过 UTF-8 JSON 传递。
+  这不覆盖英文 Windows 原生 Java 启动器接收中文绝对命令行参数的限制。
 - CourseDemoSmoke.java：在专用隔离应用目录运行，用本机HTTP mock和随机假Key验证课程CSV模板。
   目录必须有内容为 FLOW_COURSE_DEMO_SMOKE_V1 的 .course-demo-smoke.marker；没有已有配置或安装指针。
   需要复制 examples/course、tools/key-protector.exe、主程序及五个工具JAR和lib；只证明链路，不证明模型算术。
